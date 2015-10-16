@@ -6,13 +6,13 @@ require 'uri'
 class OpenGraph
   attr_accessor :src, :url, :type, :title, :description, :images, :metadata, :response, :original_images
 
-  def initialize(src, fallback = true, options = {})
+  def initialize(src, body = nil, fallback = true, options = {})
     if fallback.is_a? Hash
       options = fallback
       fallback = true
     end
     @src = src
-    @body = nil
+    @body = body
     @images = []
     @metadata = {}
     parse_opengraph(options)
@@ -23,9 +23,7 @@ class OpenGraph
   private
   def parse_opengraph(options = {})
     begin
-      if @src.include? '</html>'
-        @body = @src
-      else
+      if !@body
         @body = RedirectFollower.new(@src, options).resolve.body
       end
     rescue
